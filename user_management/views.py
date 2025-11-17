@@ -1,6 +1,6 @@
 from rest_framework import status, viewsets, generics
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated , IsAdminUser
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -37,10 +37,12 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
+        print(f"register user method called here {request.data}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        print(serializer)
         user = serializer.save()
-
+        print(user)
         return Response({
             "message": "User registered successfully. Please verify your email using the OTP sent.",
             "user": UserSerializer(user, context=self.get_serializer_context()).data
@@ -75,11 +77,12 @@ class LoginView(APIView):
 
         user = serializer.validated_data['user']
         tokens = get_tokens_for_user(user)
-
+        user_data = UserSerializer(user).data
         return Response({
             "message": "Login successful",
-            "tokens": tokens,
-            "user": UserSerializer(user).data
+            "refresh": tokens['refresh'],
+            "access": tokens['access'],
+            "user": user_data
         }, status=status.HTTP_200_OK)
 
 
@@ -90,13 +93,24 @@ class UserViewSet(viewsets.ModelViewSet):
     """ViewSet for managing user profile."""
     queryset = UserModel.objects.filter(is_deleted=False)
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    lookup_field = 'slug'
 
-    def get_queryset(self):
-        """Limit to current authenticated user."""
-        if self.request.user.is_superuser:
-            return self.queryset  # Superuser can see all
-        return self.queryset.filter(id=self.request.user.id)
+    # def get_queryset(self):
+    #     """Limit to current authenticated user."""
+    #     if self.request.user.is_superuser:
+    #         return self.queryset  # Superuser can see all
+    #     return self.queryset.filter(id=self.request.user.id)
+    
+
+    def get_permissions(self):
+        print(f"Current action is = {self.action}")
+        if self.action in ['retrieve']:
+            permission_classes = [AllowAny]
+        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated , IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
     def perform_destroy(self, instance):
         """Soft delete user."""

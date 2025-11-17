@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from .models import UserModel, EmailOtp
 import random
 import uuid
-from .utils import send_verification_email
+from .utils import send_otp_email as send_verification_email
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
@@ -18,11 +18,14 @@ User = get_user_model()
 # USER SERIALIZER
 # -------------------------------
 class UserSerializer(serializers.ModelSerializer):
+    profile_pic = serializers.ImageField(required=False, allow_null=True)
     """Serializer for reading and updating user info"""
     class Meta:
         model = UserModel
         fields = [
             'id',
+            'first_name',
+            'last_name',
             'email',
             'username',
             'bio',
@@ -33,8 +36,18 @@ class UserSerializer(serializers.ModelSerializer):
             'is_active',
             'date_joined',
             'updated_at',
+            'is_superuser',
         ]
-        read_only_fields = ['id', 'slug', 'is_verified', 'date_joined', 'updated_at']
+        read_only_fields = ['id', 'slug', 'is_verified', 'date_joined', 'updated_at','is_superuser']
+    
+    def get_profile_pic(self,obj):
+        """
+        Returns absolute URL for profile_pic if available.
+        """
+        request = self.context.get('request')
+        if obj.profile_pic and hasattr(obj.profile_pic, 'url'):
+            return request.build_absolute_uri(obj.profile_pic.url) if request else obj.profile_pic.url
+        return None
 
 
 # -------------------------------
@@ -64,7 +77,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         EmailOtp.objects.create(user=user, email=user.email, otp=otp_code)
 
         # ✅ Send email
-        send_verification_email(user.email, otp_code, user.username)
+        #send_verification_email(user.email, otp_code, user.username or user.first_name)
 
         # (Optional) – send email (implement actual mail sending later)
         print(f"OTP for {user.email}: {otp_code}")  # For testing purpose only
@@ -148,7 +161,7 @@ class ForgotPasswordRequestSerializer(serializers.Serializer):
 
         EmailOtp.objects.create(user=user,email=email,otp=otp)
 
-        send_verification_email(email,otp,user.first_name)
+        send_verification_email(email,otp,user.first_name or user.username,purpose="password_forget")
 
         return user
 
@@ -168,7 +181,7 @@ class ResetPasswordSerializer(serializers.Serializer):
             otp_obj = EmailOtp.objects.filter(email=email,otp=otp,is_used=False).latest()
         except EmailOtp.DoesNotExist:
             raise serializers.ValidationError({
-                "otp":"invalid otp or expored otp"
+                "otp":"invalid otp or expired otp"
             })
         
         expiry_time = otp_obj.created_at +timedelta(minutes=10)
@@ -176,7 +189,7 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"otp":"the otp is expired please request the new one"})
         
         user = otp_obj.user
-        validate_password(user,new_password)
+        validate_password(new_password,user=user)
 
         attrs['user'] = user
         attrs['otp_obj'] = otp_obj
@@ -192,6 +205,6 @@ class ResetPasswordSerializer(serializers.Serializer):
         user.save()
 
         otp_obj.is_used=True
-        otp_obj.save(update_feild=['is_used'])
+        otp_obj.save(update_fields=['is_used'])
 
         return {"message":"the users password is reset successfully"}

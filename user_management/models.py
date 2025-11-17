@@ -110,3 +110,4 @@ class EmailOtp(models.Model):
     class Meta:
         verbose_name = "Email OTP"
         verbose_name_plural = "Email OTPs"
+        get_latest_by = 'created_at'
