@@ -1,10 +1,8 @@
 from rest_framework import status, viewsets, generics
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated , IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated , IsAdminUser , IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from django.contrib.auth import authenticate
 
 from .models import UserModel
 from .serializers import (
@@ -77,7 +75,8 @@ class LoginView(APIView):
 
         user = serializer.validated_data['user']
         tokens = get_tokens_for_user(user)
-        user_data = UserSerializer(user).data
+        user_data = UserSerializer(user, context={"request": request}).data
+        
         return Response({
             "message": "Login successful",
             "refresh": tokens['refresh'],
@@ -104,8 +103,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         print(f"Current action is = {self.action}")
-        if self.action in ['retrieve']:
-            permission_classes = [AllowAny]
+        if self.action in ['retrieve' , 'list']:
+            permission_classes = [IsAuthenticatedOrReadOnly]
         elif self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated , IsAdminUser]
         else:
@@ -136,4 +135,11 @@ class ResetPasswordView(APIView):
             serializer.save()
             return Response(status=status.HTTP_200_OK,data={"message":"your password is reset successfully"})
         return Response(status=status.HTTP_400_BAD_REQUEST,data=serializer.errors)
+    
+
+class MyView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
         

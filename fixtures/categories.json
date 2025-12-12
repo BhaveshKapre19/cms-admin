@@ -1,0 +1,12 @@
+[
+  { "model": "post.category", "fields": { "name": "Technology", "slug": "technology", "description": "Latest trends, innovations, and updates in the world of tech." }},
+  { "model": "post.category", "fields": { "name": "Programming", "slug": "programming", "description": "Coding tutorials, best practices, and development articles." }},
+  { "model": "post.category", "fields": { "name": "Web Development", "slug": "web-development", "description": "All things frontend, backend, and full-stack development." }},
+  { "model": "post.category", "fields": { "name": "Artificial Intelligence", "slug": "artificial-intelligence", "description": "Insights on machine learning, deep learning, and AI advancements." }},
+  { "model": "post.category", "fields": { "name": "Cybersecurity", "slug": "cybersecurity", "description": "Security tips, vulnerabilities, and defensive practices." }},
+  { "model": "post.category", "fields": { "name": "Cloud Computing", "slug": "cloud-computing", "description": "Articles on AWS, Azure, GCP, DevOps, and cloud infrastructure." }},
+  { "model": "post.category", "fields": { "name": "Business", "slug": "business", "description": "Entrepreneurship, strategies, and business insights." }},
+  { "model": "post.category", "fields": { "name": "Design", "slug": "design", "description": "UI/UX principles, creativity, and product design." }},
+  { "model": "post.category", "fields": { "name": "Lifestyle", "slug": "lifestyle", "description": "Health, productivity, and personal lifestyle guidance." }},
+  { "model": "post.category", "fields": { "name": "News & Updates", "slug": "news-updates", "description": "General updates, announcements, and release news." }}
+]

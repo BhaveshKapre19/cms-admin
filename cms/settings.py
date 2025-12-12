@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # Apps
     'user_management.apps.UserManagementConfig',
     'post.apps.PostConfig',
+    'fileGallery.apps.FileGalleryConfig',
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,18 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     "http://127.0.0.1:3000",
 # ]
 
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "access-control-allow-origin",  # ← ADD THIS
+]
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

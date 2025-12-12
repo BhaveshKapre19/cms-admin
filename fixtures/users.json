@@ -1,0 +1,112 @@
+[
+  {
+    "model": "user_management.usermodel",
+    "pk": 10,
+    "fields": {
+      "first_name": "Aarav",
+      "last_name": "Sharma",
+      "email": "aarav@example.com",
+      "username": "aarav",
+      "bio": "Tech enthusiast and backend developer.",
+      "address": "Mumbai, India",
+      "slug": "aarav-usr1001",
+      "profile_pic": null,
+      "is_verified": true,
+      "is_deleted": false,
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$600000$demo$LzEzIUdO8ipE0mKfRhzC2/CYjCMZJLdnOjFkWDXLI98=",
+      "date_joined": "2025-01-01T10:00:00Z",
+      "updated_at": "2025-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "user_management.usermodel",
+    "pk": 2,
+    "fields": {
+      "first_name": "Sara",
+      "last_name": "Patel",
+      "email": "sara@example.com",
+      "username": "sara",
+      "bio": "UI/UX designer and creative thinker.",
+      "address": "Ahmedabad, India",
+      "slug": "sara-usr1002",
+      "profile_pic": null,
+      "is_verified": true,
+      "is_deleted": false,
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$600000$demo$LzEzIUdO8ipE0mKfRhzC2/CYjCMZJLdnOjFkWDXLI98=",
+      "date_joined": "2025-01-02T10:00:00Z",
+      "updated_at": "2025-01-02T10:00:00Z"
+    }
+  },
+  {
+    "model": "user_management.usermodel",
+    "pk": 3,
+    "fields": {
+      "first_name": "Rohan",
+      "last_name": "Singh",
+      "email": "rohan@example.com",
+      "username": "rohan",
+      "bio": "Cloud engineer and DevOps learner.",
+      "address": "Delhi, India",
+      "slug": "rohan-usr1003",
+      "profile_pic": null,
+      "is_verified": true,
+      "is_deleted": false,
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$600000$demo$LzEzIUdO8ipE0mKfRhzC2/CYjCMZJLdnOjFkWDXLI98=",
+      "date_joined": "2025-01-03T10:00:00Z",
+      "updated_at": "2025-01-03T10:00:00Z"
+    }
+  },
+  {
+    "model": "user_management.usermodel",
+    "pk": 4,
+    "fields": {
+      "first_name": "Nisha",
+      "last_name": "Verma",
+      "email": "nisha@example.com",
+      "username": "nisha",
+      "bio": "Content writer and marketing specialist.",
+      "address": "Pune, India",
+      "slug": "nisha-usr1004",
+      "profile_pic": null,
+      "is_verified": true,
+      "is_deleted": false,
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$600000$demo$LzEzIUdO8ipE0mKfRhzC2/CYjCMZJLdnOjFkWDXLI98=",
+      "date_joined": "2025-01-04T10:00:00Z",
+      "updated_at": "2025-01-04T10:00:00Z"
+    }
+  },
+  {
+    "model": "user_management.usermodel",
+    "pk": 5,
+    "fields": {
+      "first_name": "Kabir",
+      "last_name": "Chopra",
+      "email": "kabir@example.com",
+      "username": "kabir",
+      "bio": "Full-stack developer and open-source contributor.",
+      "address": "Indore, India",
+      "slug": "kabir-usr1005",
+      "profile_pic": null,
+      "is_verified": true,
+      "is_deleted": false,
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "password": "pbkdf2_sha256$600000$demo$LzEzIUdO8ipE0mKfRhzC2/CYjCMZJLdnOjFkWDXLI98=",
+      "date_joined": "2025-01-05T10:00:00Z",
+      "updated_at": "2025-01-05T10:00:00Z"
+    }
+  }
+]

@@ -40,14 +40,20 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'slug', 'is_verified', 'date_joined', 'updated_at','is_superuser']
     
-    def get_profile_pic(self,obj):
-        """
-        Returns absolute URL for profile_pic if available.
-        """
-        request = self.context.get('request')
-        if obj.profile_pic and hasattr(obj.profile_pic, 'url'):
-            return request.build_absolute_uri(obj.profile_pic.url) if request else obj.profile_pic.url
-        return None
+    def get_profile_pic(self, obj):
+        request = self.context.get("request")
+
+        if not obj.profile_pic:
+            return None
+
+        url = obj.profile_pic.url
+
+        if request:
+            return request.build_absolute_uri(url)
+
+        # Fallback for cases where request is missing
+        from django.conf import settings
+        return f"{settings.MEDIA_URL}{url}".replace('//', '/')
 
 
 # -------------------------------
