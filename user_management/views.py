@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated , IsAdminUser , IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from .permissions import IsAdminOrOwner
 
 from .models import UserModel
 from .serializers import (
@@ -93,6 +94,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = UserModel.objects.filter(is_deleted=False)
     serializer_class = UserSerializer
     lookup_field = 'slug'
+    permission_classes = [IsAuthenticated , IsAdminOrOwner]
 
     # def get_queryset(self):
     #     """Limit to current authenticated user."""
@@ -101,15 +103,15 @@ class UserViewSet(viewsets.ModelViewSet):
     #     return self.queryset.filter(id=self.request.user.id)
     
 
-    def get_permissions(self):
-        print(f"Current action is = {self.action}")
-        if self.action in ['retrieve' , 'list']:
-            permission_classes = [IsAuthenticatedOrReadOnly]
-        elif self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAuthenticated , IsAdminUser]
-        else:
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+    # def get_permissions(self):
+    #     print(f"Current action is = {self.action}")
+    #     if self.action in ['retrieve' , 'list']:
+    #         permission_classes = [IsAuthenticatedOrReadOnly]
+    #     elif self.action in ['create', 'update', 'partial_update', 'destroy']:
+    #         permission_classes = [IsAuthenticated , IsAdminUser]
+    #     else:
+    #         permission_classes = [IsAdminUser]
+    #     return [permission() for permission in permission_classes]
 
     def perform_destroy(self, instance):
         """Soft delete user."""
@@ -120,15 +122,18 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ForgetPasswordView(APIView):
+    permission_classes = [AllowAny]
     def post(self,request):
         serializer = ForgotPasswordRequestSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_200_OK,data={"message":"check your email for the otp"})
         return Response(status=status.HTTP_400_BAD_REQUEST,data=serializer.errors)
+
     
 
 class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
     def post(self,request):
         serializer = ResetPasswordSerializer(data=request.data)
         if serializer.is_valid():

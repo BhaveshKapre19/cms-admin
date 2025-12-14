@@ -14,15 +14,15 @@ class PostViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
+        # Admin can see everything
         if user.is_authenticated and user.is_superuser:
             return Post.all_objects.all()
 
+        # Logged-in user → only their posts
         if user.is_authenticated:
-            return Post.all_objects.filter(
-                models.Q(is_published=True) |
-                models.Q(author=user)
-            )
+            return Post.all_objects.filter(author=user)
 
+        # Public → only published posts
         return Post.objects.filter(is_published=True)
 
     def get_permissions(self):
