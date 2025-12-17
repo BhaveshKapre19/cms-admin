@@ -17,3 +17,19 @@ class IsAdminOrOwner(BasePermission):
 
         # User can modify ONLY their own profile
         return obj == request.user
+
+class IsUserActive(BasePermission):
+    """
+    Allows access only to active users.
+    """
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_active
+    
+class IsVerifiedUser(BasePermission):
+    """
+    Allows access only to verified users.
+    """
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_verified

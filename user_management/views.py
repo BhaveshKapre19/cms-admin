@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated , IsAdminUser , IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .permissions import IsAdminOrOwner
+from .permissions import IsAdminOrOwner, IsVerifiedUser, IsUserActive
+from rest_framework.decorators import action
 
 from .models import UserModel
 from .serializers import (
@@ -14,6 +15,7 @@ from .serializers import (
     ForgotPasswordRequestSerializer,
     ResetPasswordSerializer
 )
+
 
 
 # ---------------------------------
@@ -96,28 +98,33 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     permission_classes = [IsAuthenticated , IsAdminOrOwner]
 
-    # def get_queryset(self):
-    #     """Limit to current authenticated user."""
-    #     if self.request.user.is_superuser:
-    #         return self.queryset  # Superuser can see all
-    #     return self.queryset.filter(id=self.request.user.id)
-    
-
-    # def get_permissions(self):
-    #     print(f"Current action is = {self.action}")
-    #     if self.action in ['retrieve' , 'list']:
-    #         permission_classes = [IsAuthenticatedOrReadOnly]
-    #     elif self.action in ['create', 'update', 'partial_update', 'destroy']:
-    #         permission_classes = [IsAuthenticated , IsAdminUser]
-    #     else:
-    #         permission_classes = [IsAdminUser]
-    #     return [permission() for permission in permission_classes]
-
     def perform_destroy(self, instance):
         """Soft delete user."""
         instance.is_deleted = True
         instance.is_active = False
         instance.save()
+
+    @action(detail=True, methods=['patch'], permission_classes=[IsAdminUser])
+    def lock(self, request,slug=None):
+        """Admin can lock a user account."""
+        user = self.get_object()
+        if not user.is_active:
+            return Response({"message": f"User '{user.email}' is already locked."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user.is_active = False
+            user.save()
+            return Response({"message": f"User '{user.email}' has been locked."}, status=status.HTTP_200_OK)
+        
+    @action(detail=True, methods=['patch'], permission_classes=[IsAdminUser])
+    def unlock(self, request,slug=None):
+        """Admin can unlock a user account."""
+        user = self.get_object()
+        if user.is_active:
+            return Response({"message": f"User '{user.email}' is already active."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            user.is_active = True
+            user.save()
+            return Response({"message": f"User '{user.email}' has been unlocked."}, status=status.HTTP_200_OK)
 
 
 
@@ -143,7 +150,7 @@ class ResetPasswordView(APIView):
     
 
 class MyView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated , IsVerifiedUser]
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)

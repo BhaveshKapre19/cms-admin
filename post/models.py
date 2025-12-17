@@ -7,7 +7,6 @@ import uuid
 import os
 import re
 
-
 def post_upload_path(instance, filename):
     """
     Upload path: /media/{user-slug}/posts/{filename}
@@ -42,7 +41,7 @@ class Category(models.Model):
 
 
 class Post(models.Model):
-    author = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    author = models.ForeignKey(UserModel, on_delete=models.CASCADE ,related_name='posts')
     title = models.CharField(max_length=250)
     body = models.TextField()  # raw HTML
     excerpt = models.TextField(blank=True)  # text-only summary

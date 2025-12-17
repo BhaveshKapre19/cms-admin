@@ -19,6 +19,7 @@ User = get_user_model()
 # -------------------------------
 class UserSerializer(serializers.ModelSerializer):
     profile_pic = serializers.ImageField(required=False, allow_null=True)
+    post_count = serializers.SerializerMethodField()
     """Serializer for reading and updating user info"""
     class Meta:
         model = UserModel
@@ -37,8 +38,9 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined',
             'updated_at',
             'is_superuser',
+            'post_count',
         ]
-        read_only_fields = ['id', 'slug', 'is_verified', 'date_joined', 'updated_at','is_superuser']
+        read_only_fields = ['id', 'slug', 'is_verified', 'date_joined', 'updated_at','is_superuser','post_count']
     
     def get_profile_pic(self, obj):
         request = self.context.get("request")
@@ -54,6 +56,9 @@ class UserSerializer(serializers.ModelSerializer):
         # Fallback for cases where request is missing
         from django.conf import settings
         return f"{settings.MEDIA_URL}{url}".replace('//', '/')
+    
+    def get_post_count(self, obj):
+        return obj.posts.count()
 
 
 # -------------------------------
