@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cms.middleware.MaintenanceModeMiddleware',  # Custom maintenance mode middleware
 ]
 
 ROOT_URLCONF = 'cms.urls'
@@ -176,3 +177,6 @@ EMAIL_PORT = '2525'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'no-reply@cms.com'
 
+
+MAINTAINANCE = False
+ALLOW_REGISTRATION = False

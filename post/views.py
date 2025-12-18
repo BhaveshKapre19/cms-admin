@@ -44,7 +44,7 @@ class PostViewset(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         post = self.get_object()
 
-        if request.user != post.author:
+        if not (request.user.is_superuser or request.user == post.author):
             return Response(
                 {"message": "You cannot delete someone else's post"},
                 status=status.HTTP_401_UNAUTHORIZED
@@ -90,6 +90,27 @@ class PostViewset(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
+    @action(detail=True, methods=['patch'])
+    def restore(self, request, *args, **kwargs):
+        post = self.get_object()
+
+        if not post.is_deleted:
+            return Response(
+                {"message": f"Post '{post.title}' is not archived"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not (request.user.is_superuser or request.user == post.author):
+            return Response(
+                {"message": "You cannot restore this post"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        post.restore()
+        return Response(
+            {"message": f"Post '{post.title}' restored successfully"},
+            status=status.HTTP_200_OK
+        )
 
 
 class CategoryViewset(viewsets.ModelViewSet):

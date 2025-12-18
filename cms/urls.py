@@ -19,10 +19,30 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+
+
+def health_check(request):
+    if getattr(settings, "MAINTENANCE", False):
+        return JsonResponse(
+            {'detail': 'The site is under maintenance. Please try again later.', "key": "MAINTENANCE_MODE","CODE":"MAT503"},
+            status=503
+        )
+
+    return JsonResponse(
+        {
+            "status": "healthy",
+            "maintenance": False
+        },
+        status=200
+    )
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('cms.apis')),
+    path('health-check/', health_check),
+
 ]
 
 if settings.DEBUG:

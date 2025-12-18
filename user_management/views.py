@@ -108,6 +108,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def lock(self, request,slug=None):
         """Admin can lock a user account."""
         user = self.get_object()
+        if user.is_superuser:
+            return Response({"message": "Cannot lock a superuser account."}, status=status.HTTP_400_BAD_REQUEST)
+
         if not user.is_active:
             return Response({"message": f"User '{user.email}' is already locked."}, status=status.HTTP_400_BAD_REQUEST)
         else:
